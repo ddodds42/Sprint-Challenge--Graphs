@@ -8,7 +8,7 @@ from ast import literal_eval
 import sys
 sys.path.insert(1, './graph/')
 from graph import Graph
-from util import Queue
+from util import Queue, Stack
 
 # Load world
 world = World()
@@ -101,4 +101,40 @@ def loopy(fork):
 for fork in forks:
     loopy(fork)
 
-print(len(loop_members))
+'''custom dft to return members of a single branch'''
+def dft_custom(current, prev):
+    s = Stack()
+    visited = [prev]
+    s.push(current)
+    while s.size() > 0:
+        v = s.pop()
+        if v not in visited:
+            visited.append(v)
+            for vert in maize.get_neighbors(v):
+                s.push(vert)
+    return visited[1:]
+
+'''let's start traversing! First branch, then loop.'''
+
+branchtest = dft_custom(105, 104)
+
+print(branchtest)
+
+def dft_path(dft_list):
+    path = []
+    # leaf_here = []
+    # for r in dft_list:
+    #     if r in leaves:
+    #         leaf_here.append(r)
+    for r in dft_list:
+        # if r in leaves:
+        #     path += [r]
+        #     path += path.reverse()
+        # else:
+        path.append(r)
+    path.reverse()
+    backtrack = path.copy()
+    path.reverse()
+    return backtrack
+
+print(dft_path(branchtest))

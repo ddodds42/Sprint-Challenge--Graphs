@@ -1,0 +1,40 @@
+def traverse(start, unseen = copy of the rooms set):
+	traversal_path = []
+	station = start
+	s = Stack()
+	while unseen has rooms in it:
+		begin at station. Add it to the traversal path
+		remove station from unseen
+		if unseen is empty
+			break while loop, return traversal path
+		for n in station's neighbors:
+			if n is in a loop and in unseen:
+				push it on the stack s
+		for n in station's neighbors:
+			if n is not in a loop and in unseen:
+				push it on the stack s
+		while there's rooms in stack s:
+			trailhead = s.pop()
+			if trailhead is not in a loop:
+				branchmems = dft_custom(trailhead, station)
+				for m in branchmems:
+					if m in loop_members:
+						hidden_loop_fork = m
+						break forloop
+				if len(hiding_loops) > 0
+****					add path betwixt trailhead, hidden_loop_fork
+					loop_path = traverse(hidden_loop_fork, unseen=dft(hidden_loop_fork, station))
+					add loop path to traversal path
+****				add the path taken to traversal path
+				remove rooms in path from unseen
+				if unseen is empty
+					break this loop
+				else traverse back to station
+				add the path taken to traversal path
+				remove rooms in path from unseen
+				continue (to beginning of while loop)
+			if trailhead is in a loop:
+				station = trailhead
+				break this inner whileloop to continue on the outer while loop
+	return traversal_path
+	
