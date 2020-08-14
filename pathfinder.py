@@ -61,7 +61,11 @@ def swapper(dict_value):
     dict_value[1] = holder
     return dict_value
 
-'''this loop populates each rooms dict in directory with the swapped values.'''
+'''this loop populates each rooms dict in directory with the swapped values.
+{0: [(3, 5), {'n': 1, 's': 5, 'e': 3, 'w': 7}]}
+becomes
+{0: [(3, 5), {1:'n', 5:'s', 3:'e', 7:'w'}]}
+'''
 for i in directory:
     directory[i] = swapper(directory[i])
 
@@ -112,29 +116,41 @@ def dft_custom(current, prev):
             visited.append(v)
             for vert in maize.get_neighbors(v):
                 s.push(vert)
-    return visited[1:]
+    return visited
 
 '''let's start traversing! First branch, then loop.'''
 
+'''
+THE FXN BELOW IS NOT RETURNING A CORRECT BACKTACKED TRAVERSAL OF A BRANCH.
+YOU NEED TO
+1] GET THAT RUNNING CORRECTLY FOR BRANCHES WITHOUT ROOM LOOPS, THEN
+2] GET IT OR ANOTHER FXN WORKING CORRECTLY FOR BRANCHES IN BETWEEN LOOPS, THEN
+3] STITCH TOGETHER THE ABOVE FXNS INTO THE TRAVERSER FXN FROM PSEUDOPAD.TXT
+'''
 branchtest = dft_custom(105, 104)
 
 print(branchtest)
 
 def dft_path(dft_list):
-    path = []
-    # leaf_here = []
-    # for r in dft_list:
-    #     if r in leaves:
-    #         leaf_here.append(r)
-    for r in dft_list:
-        # if r in leaves:
-        #     path += [r]
-        #     path += path.reverse()
-        # else:
-        path.append(r)
-    path.reverse()
-    backtrack = path.copy()
-    path.reverse()
-    return backtrack
+    s = Stack()
+    visited = [dft_list[0]]
+    s.push((dft_list[1], dft_list[0]))
+    while s.size() > 0:
+        v = s.pop()
+        if v[0] in leaves:
+                visited += maize.bfs(v[0], s.stack[-1][0])
+                v = s.pop()
+                for vert in maize.get_neighbors(v[0]):
+                    if vert != v[1]:
+                        s.push((vert, v[0]))
+        elif v[0] not in visited:
+            visited.append(v[0])
+            for vert in maize.get_neighbors(v[0]):
+                if vert != v[1]:
+                    s.push((vert, v[0]))
+    if visited != dft_list[1]:
+        visited += maize.bfs(visited[-1],dft_list[1])[1:]
+    return visited[1:]
+
 
 print(dft_path(branchtest))
