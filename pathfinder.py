@@ -5,9 +5,10 @@ from world import World
 import random
 from ast import literal_eval
 
-# import sys
-# sys.path.insert(1, '../graph/')
-# from graph import Graph
+import sys
+sys.path.insert(1, './graph/')
+from graph import Graph
+from util import Queue
 
 # Load world
 world = World()
@@ -34,6 +35,7 @@ leaves = set()
 '''forks have 3 or more neightbors. these rooms are divergence points that must
 be returned to in a traversal or search'''
 forks = set()
+loop_members = set()
 
 '''this loop sorts rooms into leaves, links, and forks'''
 for i in list(room_graph.keys()):
@@ -63,4 +65,40 @@ def swapper(dict_value):
 for i in directory:
     directory[i] = swapper(directory[i])
 
-print(directory)
+'''instantiate each room as a graph vertex for bfs loop detection'''
+maize = Graph()
+for r in directory:
+    maize.add_vertex(r)
+
+'''creation of the edges'''
+for r in directory:
+    for n in directory[r][1]:
+        maize.add_edge(r, n, bidir=True)
+
+'''finds loops'''
+def loopy(fork):
+    for n in maize.get_neighbors(fork):
+        if n in loop_members or n in leaves:
+            continue
+        q = Queue()
+        q.enqueue([(n, fork)])
+        visited = set()
+        while q.size() > 0:
+            path = q.dequeue()
+            v = path[-1][0]
+            if v not in visited:
+                if v == fork:
+                    for r in path:
+                        loop_members.add(r[0])
+                visited.add(v)
+                for neighb in maize.get_neighbors(v):
+                    if neighb != path[-1][1]:
+                        path_copy = list(path)
+                        path_copy.append((neighb, v))
+                        q.enqueue(path_copy)
+
+'''forloop to find every loop in the maize'''
+for fork in forks:
+    loopy(fork)
+
+print(len(loop_members))

@@ -98,6 +98,23 @@ class Graph:
         """
         pass  # TODO
 
+    # def loopy(self, vertex):
+    #     q = Queue()
+    #     q.enqueue([self.get_neighbors(vertex)])
+    #     visited = set(vertex)
+    #     while q.size() > 0:
+    #         path = q.dequeue()
+    #         v = path[-1]
+    #         if v not in visited:
+    #             if v == destination_vertex:
+    #                 return path
+    #             visited.add(v)
+    #             for next_v in self.get_neighbors(v):
+    #                 path_copy = list(path)
+    #                 path_copy.append(next_v)
+    #                 q.enqueue(path_copy)
+    #     return None
+
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
     # https://github.com/LambdaSchool/Graphs/blob/master/objectives/breadth-first-search/img/bfs-visit-order.png
