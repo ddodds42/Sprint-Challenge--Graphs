@@ -8,9 +8,10 @@ class Graph:
 
     def __init__(self):
         self.vertices = {}
+        self.cardinal_pairs = {'n':'s', 's':'n', 'e':'w', 'w','e'}
 
     def add_vertex(self, vertex_id):
-        self.vertices[vertex_id] = set()
+        self.vertices[vertex_id] = {}
 
     def add_edge(self, v1, v2, bidir=False):
         if v1 in self.vertices and v2 in self.vertices:
@@ -19,9 +20,17 @@ class Graph:
                 self.vertices[v2].add(v1)
         else:
             raise IndexError('nonexistant vertex')
+    
+    def new_door(self, vertex_id, dirxn, destination_vertex = '?'):
+        self.vertices[vertex_id][dirxn] = destination_vertex
 
     def get_neighbors(self, vertex_id):
-        return self.vertices[vertex_id]
+        unopened = []
+        doors = self.vertices[vertex_id]
+        for dirxn, door in doors.items():
+            if door == '?':
+                unopened.append(dirxn)
+        return unopened
 
     def bft(self, starting_vertex):
         q = Queue()
@@ -35,17 +44,51 @@ class Graph:
                     q.enqueue(vert)
         return visited
 
-    def dft(self, starting_vertex):
-        s = Stack()
-        visited = []
-        s.push(starting_vertex)
-        while s.size() > 0:
-            v = s.pop()
-            if v not in visited:
-                visited.append(v)
-                for vert in self.get_neighbors(v):
-                    s.push(vert)
-        return visited
+    def dft(self, dirxn = None, prev = None):
+        # s = Stack()
+        # visited = []
+        # s.push(starting_vertex)
+        # while s.size() > 0:
+        #     v = s.pop()
+        #     if v not in visited:
+        #         visited.append(v)
+        #         for vert in self.get_neighbors(v):
+        #             s.push(vert)
+        # return visited
+        if dirxn:
+            player.travel(dirxn)
+            traversal_path.append(dirxn)
+
+        cur = player.current_room
+
+        if cur.id not in self.vertices:
+            self.add_room(cur.id)
+            doors = cur.get_exits()
+            for door in doors:
+                self.new_door(cur.id, door)
+        
+        if prev:
+            self.new_door(prev.id, dirxn, cur.id)
+            self.new_door(cur.id, self.cardinal_pairs[dirxn], prev.id)
+        
+        if len(self.vertices) == len(room_graph):
+            return
+        
+        untraversed = self.get_neighbors(cur.id)
+
+        if len(untraversed) > 0:
+            for room in untraversed:
+                self.dft(room, cur)
+        
+        else:
+            unvisited_path = self.bfs(cur)
+            if not unvisited_path:
+                return
+            crow_flies = list(map(lambda x: x[1], unvisited_path))
+            traversal_path.extend(crow_flies)
+            for move in crow_flies:
+                player.travel(move)
+            self.dft()
 
     def dft_recursive(self, start_vert, vis=set()):
         if start_vert not in vis:
