@@ -70,7 +70,7 @@ class Graph:
         cur = player.current_room
 
         if cur.id not in self.vertices:
-            self.add_room(cur.id)
+            self.add_vertex(cur.id)
             doors = cur.get_exits()
             for door in doors:
                 self.new_door(cur.id, door)
