@@ -8,7 +8,7 @@ class Graph:
 
     def __init__(self):
         self.vertices = {}
-        self.cardinal_pairs = {'n':'s', 's':'n', 'e':'w', 'w','e'}
+        self.cardinal_pairs = {'n':'s', 's':'n', 'e':'w', 'w':'e'}
 
     def add_vertex(self, vertex_id):
         self.vertices[vertex_id] = {}
@@ -97,21 +97,26 @@ class Graph:
             for n in self.get_neighbors(start_vert):
                 self.dft_recursive(n, vis=vis)
 
-    def bfs(self, starting_vertex, destination_vertex):
+    def bfs(self, starting_vertex): # , destination_vertex
         q = Queue()
-        q.enqueue([starting_vertex])
+        q.enqueue([(starting_vertex.id, None)])
         visited = set()
         while q.size() > 0:
             path = q.dequeue()
-            v = path[-1]
-            if v not in visited:
-                if v == destination_vertex:
-                    return path
-                visited.add(v)
-                for next_v in self.get_neighbors(v):
-                    path_copy = list(path)
-                    path_copy.append(next_v)
-                    q.enqueue(path_copy)
+            v = path[-1][0]
+            unseen = self.get_neighbors(v)
+            # if v not in visited:
+            #     if v == destination_vertex:
+            #         return path
+            #     visited.add(v)
+            #     for next_v in self.get_neighbors(v):
+            #         path_copy = list(path)
+            #         path_copy.append(next_v)
+            #         q.enqueue(path_copy)
+            if len(unseen) > 0:
+                return path[1:]
+            for dirxn, room in self.vertices[v].items():
+                q.enqueue(path + [(room, dirxn)])
         return None
 
     def dfs(self, starting_vertex, destination_vertex):
